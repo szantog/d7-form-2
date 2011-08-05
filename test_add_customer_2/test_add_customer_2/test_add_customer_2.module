@@ -1,0 +1,222 @@
+<?php
+// $id$
+/**
+ * 
+ * Test rendszer
+ * Ügyfél felvitele
+ * 2. változat
+ *
+ * (C) Bereczky Péter, 2011
+ *
+ */
+/**
+ * hook_menu() implementálása
+ */
+function test_add_customer_2_menu() {
+    $items['test_add_customer_2'] = array (
+            'title' => 'Ügyfél felvitele - 2. változat',
+            'page callback' => 'test_add_customer_2_page',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+/**
+ * Menu callback.
+ * 
+ */
+function test_add_customer_2_page() {
+    $output = drupal_render(drupal_get_form('add_2_customer_type_form'));
+    $output .= drupal_render(drupal_get_form('add_2_customer_data_form'));
+    return $output;
+}
+/**
+ * Előfizető típusa form definiálása.
+ */
+function add_2_customer_type_form() {
+    $form = array();
+	$form['customer_type'] = array(
+		'#title' => 'Előfizető típusának kiválasztása',
+		'#type' => 'fieldset',
+		'#collapsible' => TRUE,
+		'#collapsed' =>  (isset($_SESSION['add_2_customer_type_values'])  ? TRUE : FALSE),
+		'#description' => 'Kérem, válassza ki az előfizető típusát.',
+	);
+    $form['customer_type']['cust_type'] = array (
+            '#title' => 'Előfizető típusa',
+            '#type' => 'select',
+            '#options' => array (
+                    '1' => 'Egyéni',
+                    '2' => 'Üzleti',
+            ),
+            '#default_value' => '1',
+    );
+    $form['customer_type']['submit'] = array(
+            '#type' => 'submit',
+            '#value' => 'Küldés'
+    );
+	return $form;
+}
+function add_2_customer_type_form_submit($form, &$form_state) {
+    $_SESSION['add_2_customer_type_values'] = $form_state['values'];
+}
+/**
+ * Előfizető adatai form definiálása.
+ */
+function add_2_customer_data_form() {
+    $form = array();
+	// Csak akkor generálja, ha van kiválasztott típus
+	if (isset($_SESSION['add_2_customer_type_values'])) {
+		$form['customer_data'] = array(
+			'#title' => 'Előfizető adatai',
+			'#type' => 'fieldset',
+			'#collapsible' => FALSE,
+			'#description' => 'Adja meg az előfizető adatait.',
+		);
+		$form['customer_data']['cust_nm'] = array(
+		        '#title' => 'Előfizető neve',
+		        '#type' => 'textfield',
+            	'#required' => TRUE,
+		        '#maxlength' => 100,
+		        '#size' => 40,
+		        '#description' => 'Egyéni előfizető neve vagy üzleti előfizető rövid neve.',
+		        '#element_validate' => array('_test_name_validate'),
+		);
+		$form['customer_data']['login_name'] = array(
+		        '#title' => 'Bejelentkező név',
+		        '#type' => 'textfield',
+            	'#required' => TRUE,
+		        '#maxlength' => 45,
+		        '#size' => 40,
+		        '#description' => 'Egyedi bejelentkező név',
+		        '#element_validate' => array('_test_login_name_validate'),
+		);
+		$form['customer_data']['password'] = array(
+		        '#title' => 'Bejelentkező jelszó',
+		        '#type' => 'password',
+            	'#required' => TRUE,
+		        '#maxlength' => 45,
+		        '#size' => 40,
+		        '#description' => 'A jelszó hossza minimum 8 karakter, az angol ABC betűit, számjegyeket és -&@?:.$+!# karaktert tartalmazhat.',
+		        '#element_validate' => array('_test_login_name_validate'),
+		);
+		$form['customer_data']['password_again'] = array(
+		        '#title' => 'Bejelentkező jelszó ismét',
+		        '#type' => 'password',
+            	'#required' => TRUE,
+		        '#maxlength' => 45,
+		        '#size' => 40,
+		        '#description' => 'Egyedi bejelentkező név',
+		        '#element_validate' => array('_test_login_name_validate'),
+		);
+		if ($_SESSION['add_2_customer_type_values']['cust_type'] == '1') {
+			// Ha egyéni előfizető
+			$form['customer_data']['mothers_name'] = array(
+				    '#title' => 'Édesanyja neve',
+				    '#type' => 'textfield',
+	            	'#required' => TRUE,
+				    '#maxlength' => 45,
+				    '#size' => 40,
+				    '#element_validate' => array('_test_name_validate'),
+				    '#description' => 'Egyéni előfizető édesanyjának neve',
+			);
+			$form['customer_data']['birth_date'] = array(
+				    '#title' => 'Születési dátum',
+				    '#type' => 'textfield',
+	            	'#required' => TRUE,
+				    '#maxlength' => 10,
+				    '#size' => 10,
+				    '#element_validate' => array('_test_date_validate'),
+				    '#description' => 'Egyéni előfizető születési dátuma ÉÉÉÉ-HH-NN formában.',
+			);
+		} else {
+			// Ha üzleti előfizető
+			$form['customer_data']['tax_number'] = array(
+				    '#title' => 'Adószám',
+				    '#type' => 'textfield',
+	            	'#required' => TRUE,
+				    '#maxlength' => 11,
+				    '#size' => 11,
+				    '#element_validate' => array('_test_number_validate'),
+				    '#description' => 'Üzleti előfizető adószáma csak számjegyekkel.',
+			);
+			$form['customer_data']['contact_name'] = array(
+				    '#title' => 'Kapcsolattartó neve',
+				    '#type' => 'textfield',
+	            	'#required' => TRUE,
+				    '#maxlength' => 64,
+				    '#size' => 40,
+				    '#element_validate' => array('_test_name_validate'),
+				    '#description' => 'Üzleti előfizető kapcsolattartó neve.',
+			);
+			$form['customer_data']['reseller'] = array(
+				    '#title' => 'Viszonteladó',
+				    '#type' => 'checkbox',
+				    '#return_value' => 1,
+				    '#default_value' => 0,
+				    '#description' => 'Viszonteladó üzleti előfizető esetén bejelölendő.',
+			);
+		}
+		$form['customer_data']['submit'] = array(
+		        '#type' => 'submit',
+		        '#value' => 'Küldés'
+		);
+	}
+    return $form;
+}
+/**
+ * Form validate
+ * Adatok ellenőrzése
+ */
+function add_2_customer_data_form_validate($form, &$form_state) {
+	if ($form_state['values']['password'] != $form_state['values']['password_again']) {
+		form_set_error('', 'A jelszavak eltérőek!');
+	}
+}
+/**
+ * Form submit
+ * Adatok mentése az adatbázisba
+ */
+function add_2_customer_data_form_submit($form, &$form_state) {
+    if ($_SESSION['add_2_customer_type_values']['cust_type'] == '1') {
+        // Ha egyéni előfizető, akkor az adószám és a kapcsolattartó neve mezőket 
+        // nem kell menteni.
+        db_set_active('phone');
+        db_insert('cust')
+        -> fields(array(
+            'cust_type' => $_SESSION['add_2_customer_type_values']['cust_type'],
+            'cust_nm' => $form_state['values']['cust_nm'],
+            'login_name' => $form_state['values']['login_name'],
+            'password' => $form_state['values']['password'],
+            'mothers_name' => $form_state['values']['mothers_name'],
+            'birth_date' => $form_state['values']['birth_date'],
+            'user_roles' => 'USER'
+       ))->execute();
+        db_set_active('default');
+        drupal_set_message('Az egyéni előfizető adatai mentésre kerültek.');
+    } elseif ($_SESSION['add_2_customer_type_values']['cust_type'] == '2') {
+        // Ha üzleti előfizető, akkor a viszont az adószám és kapcsolattartó 
+        // neve mezőket kell menteni.
+        $user_roles = 'USER';
+		// Ha viszonteladó is
+        if ($form_state['values']['reseller'] == 1) {
+            $user_roles = 'USER,RESELLER';
+        }
+        db_set_active('phone');
+        db_insert('cust')
+        -> fields(array(
+            'cust_type' => $_SESSION['add_2_customer_type_values']['cust_type'],
+            'cust_nm' => $form_state['values']['cust_nm'],
+            'login_name' => $form_state['values']['login_name'],
+            'password' => $form_state['values']['password'],
+            'tax_number' => $form_state['values']['tax_number'],
+            'contact_name' => $form_state['values']['contact_name'],
+            'user_roles' => $user_roles
+        ))->execute();
+        db_set_active('default');
+        drupal_set_message('Az üzleti előfizető adatai mentésre kerültek.');
+    }
+	// Törli a session változót
+	unset($_SESSION['add_2_customer_type_values']);
+}
+

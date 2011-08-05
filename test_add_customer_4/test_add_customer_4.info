@@ -1,0 +1,7 @@
+
+; $Id$
+name = "test_add_customer_4"
+description = "Ügyfél felvitele - 4. változat"
+package = "test"
+core = 7.x
+dependencies[] = test_common
