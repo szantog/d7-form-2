@@ -1,7 +1,6 @@
 <?php
-// $id$
 /**
- * 
+ *
  * Teszt rendszer
  * Ügyfél felvitele
  * 1. változat
@@ -23,7 +22,7 @@ function test_add_customer_1_menu() {
 }
 /**
  * Menu callback.
- * 
+ *
  */
 function test_add_customer_1_page() {
   $output = drupal_render(drupal_get_form('test_add_customer_1_form'));
@@ -112,7 +111,7 @@ function test_add_customer_1_form_submit($form, &$form_state) {
   // jelszó generálása
   $password = _test_pw_gen();
   if ($form_state['values']['cust_type'] == 1) {
-    // Ha egyéni előfizető, akkor az adószám és a kapcsolattartó neve mezőket 
+    // Ha egyéni előfizető, akkor az adószám és a kapcsolattartó neve mezőket
     // nem kell menteni.
     db_set_active('phone');
     db_insert('cust')
@@ -127,8 +126,9 @@ function test_add_customer_1_form_submit($form, &$form_state) {
     ))->execute();
     db_set_active('default');
     drupal_set_message('Az egyéni előfizető adatai mentésre kerültek.');
-  } elseif ($form_state['values']['cust_type'] == 2) {
-    // Ha üzleti előfizető, akkor a viszont az adószám és kapcsolattartó 
+  }
+  elseif ($form_state['values']['cust_type'] == 2) {
+    // Ha üzleti előfizető, akkor a viszont az adószám és kapcsolattartó
     // neve mezőket kell menteni.
     // Mentendő jogosultság
     $user_roles = $form_state['values']['reseller'] == 1 ? 'USER,RESELLER' : 'USER';

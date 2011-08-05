@@ -1,5 +1,4 @@
 
-; $Id$
 name = "test_add_customer_1"
 description = "Ügyfél felvitele - 1. változat"
 package = "test"

@@ -1,7 +1,6 @@
 <?php
-// $id$
 /**
- * 
+ *
  * test rendszer
  * Ügyfél felvitele
  * 3. változat
@@ -13,183 +12,184 @@
  * hook_menu() implementálása
  */
 function test_add_customer_3_menu() {
-    $items['test_add_customer_3'] = array (
-            'title' => 'Ügyfél felvitele - 3. változat',
-            'page callback' => 'test_add_customer_3_page',
-            'access callback' => TRUE,
-            'type' => MENU_CALLBACK,
-    );
-    return $items;
+  $items['test_add_customer_3'] = array (
+    'title' => 'Ügyfél felvitele - 3. változat',
+    'page callback' => 'test_add_customer_3_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
 }
 /**
  * Menu callback.
- * 
+ *
  */
 function test_add_customer_3_page() {
-    $output = drupal_render(drupal_get_form('test_add_customer_3_form'));
-    return $output;
+  $output = drupal_render(drupal_get_form('test_add_customer_3_form'));
+  return $output;
 }
 /**
  * Form definiálása.
  */
 function test_add_customer_3_form() {
-    $js = "jQuery(document).ready(function() {\n";
-    $js .= 'if (jQuery("select[name = cust_type]").val() == "1") {';
-    $js .= 'jQuery("div #tax_number").hide();';
-    $js .= 'jQuery("div #contact_name").hide();';
-    $js .= 'jQuery("div #reseller").hide();';
-    $js .= 'jQuery("div #mothers_name").show();';
-    $js .= 'jQuery("div #birth_date").show();';
-    $js .= '} else {';
-    $js .= 'jQuery("div #tax_number").show();';
-    $js .= 'jQuery("div #contact_name").show();';
-    $js .= 'jQuery("div #reseller").show();';
-    $js .= 'jQuery("div #mothers_name").hide();';
-    $js .= 'jQuery("div #birth_date").hide();';
-    $js .= '}';
-    $js .= "\n});";
-    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
-    $js = "jQuery('select').change(function() {\n";
-    $js .= 'if (jQuery("select[name = cust_type]").val() == "1") {';
-    $js .= 'jQuery("div #tax_number").hide();';
-    $js .= 'jQuery("div #contact_name").hide();';
-    $js .= 'jQuery("div #reseller").hide();';
-    $js .= 'jQuery("div #mothers_name").show();';
-    $js .= 'jQuery("div #birth_date").show();';
-    $js .= '} else {';
-    $js .= 'jQuery("div #tax_number").show();';
-    $js .= 'jQuery("div #contact_name").show();';
-    $js .= 'jQuery("div #reseller").show();';
-    $js .= 'jQuery("div #mothers_name").hide();';
-    $js .= 'jQuery("div #birth_date").hide();';
-    $js .= '}';
-    $js .= "\n});";
-    drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
-    $form = array();
-    $form['cust_type'] = array (
-            '#title' => 'Előfizető típusa',
-            '#type' => 'select',
-            '#options' => array (
-                    '1' => 'Egyéni',
-                    '2' => 'Üzleti',
-            ),
-            '#default_value' => '1',
-    );
-    $form['cust_nm'] = array(
-            '#title' => 'Előfizető neve',
-            '#type' => 'textfield',
-            '#maxlength' => 100,
-            '#size' => 40,
-            '#description' => 'Egyéni előfizető neve vagy üzleti előfizető rövid neve.',
-            '#element_validate' => array('_test_name_validate'),
-    );
-    $form['login_name'] = array(
-            '#title' => 'Bejelentkező név',
-            '#type' => 'textfield',
-            '#maxlength' => 45,
-            '#size' => 40,
-            '#description' => 'Egyedi bejelentkező név',
-            '#element_validate' => array('_test_login_name_validate'),
-    );
-    $form['mothers_name'] = array(
-            '#title' => 'Édesanyja neve',
-            '#type' => 'textfield',
-            '#maxlength' => 45,
-            '#size' => 40,
-            '#prefix' => '<div id="mothers_name">',
-            '#suffix' => '</div>',
-            '#element_validate' => array('_test_name_validate'),
-            '#description' => 'Egyéni előfizető édesanyjának neve',
-    );
-    $form['birth_date'] = array(
-            '#title' => 'Születési dátum',
-            '#type' => 'textfield',
-            '#maxlength' => 10,
-            '#size' => 10,
-            '#prefix' => '<div id="birth_date">',
-            '#suffix' => '</div>',
-            '#element_validate' => array('_test_date_validate'),
-            '#description' => 'Egyéni előfizető születési dátuma ÉÉÉÉ-HH-NN formában.',
-    );
-    $form['tax_number'] = array(
-            '#title' => 'Adószám',
-            '#type' => 'textfield',
-            '#maxlength' => 11,
-            '#size' => 11,
-            '#prefix' => '<div id="tax_number">',
-            '#suffix' => '</div>',
-            '#element_validate' => array('_test_number_validate'),
-            '#description' => 'Üzleti előfizető adószáma csak számjegyekkel.',
-    );
-    $form['contact_name'] = array(
-            '#title' => 'Kapcsolattartó neve',
-            '#type' => 'textfield',
-            '#maxlength' => 64,
-            '#size' => 40,
-            '#prefix' => '<div id="contact_name">',
-            '#suffix' => '</div>',
-            '#element_validate' => array('_test_name_validate'),
-            '#description' => 'Üzleti előfizető kapcsolattartó neve.',
-    );
-    $form['reseller'] = array(
-            '#title' => 'Viszonteladó',
-            '#type' => 'checkbox',
-            '#return_value' => 1,
-            '#default_value' => 0,
-            '#prefix' => '<div id="reseller">',
-            '#suffix' => '</div>',
-            '#description' => 'Viszonteladó üzleti előfizető esetén bejelölendő.',
-    );
-    $form['submit'] = array(
-            '#type' => 'submit',
-            '#value' => 'Küldés'
-    );
-    return $form;
+  $js = "jQuery(document).ready(function() {\n";
+  $js .= 'if (jQuery("select[name = cust_type]").val() == "1") {';
+  $js .= 'jQuery("div #tax_number").hide();';
+  $js .= 'jQuery("div #contact_name").hide();';
+  $js .= 'jQuery("div #reseller").hide();';
+  $js .= 'jQuery("div #mothers_name").show();';
+  $js .= 'jQuery("div #birth_date").show();';
+  $js .= '} else {';
+  $js .= 'jQuery("div #tax_number").show();';
+  $js .= 'jQuery("div #contact_name").show();';
+  $js .= 'jQuery("div #reseller").show();';
+  $js .= 'jQuery("div #mothers_name").hide();';
+  $js .= 'jQuery("div #birth_date").hide();';
+  $js .= '}';
+  $js .= "\n});";
+  drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
+  $js = "jQuery('select').change(function() {\n";
+  $js .= 'if (jQuery("select[name = cust_type]").val() == "1") {';
+  $js .= 'jQuery("div #tax_number").hide();';
+  $js .= 'jQuery("div #contact_name").hide();';
+  $js .= 'jQuery("div #reseller").hide();';
+  $js .= 'jQuery("div #mothers_name").show();';
+  $js .= 'jQuery("div #birth_date").show();';
+  $js .= '} else {';
+  $js .= 'jQuery("div #tax_number").show();';
+  $js .= 'jQuery("div #contact_name").show();';
+  $js .= 'jQuery("div #reseller").show();';
+  $js .= 'jQuery("div #mothers_name").hide();';
+  $js .= 'jQuery("div #birth_date").hide();';
+  $js .= '}';
+  $js .= "\n});";
+  drupal_add_js($js, array('type' => 'inline', 'scope' => 'footer'));
+  $form = array();
+  $form['cust_type'] = array (
+    '#title' => 'Előfizető típusa',
+    '#type' => 'select',
+    '#options' => array (
+            '1' => 'Egyéni',
+            '2' => 'Üzleti',
+    ),
+    '#default_value' => '1',
+  );
+  $form['cust_nm'] = array(
+    '#title' => 'Előfizető neve',
+    '#type' => 'textfield',
+    '#maxlength' => 100,
+    '#size' => 40,
+    '#description' => 'Egyéni előfizető neve vagy üzleti előfizető rövid neve.',
+    '#element_validate' => array('_test_name_validate'),
+  );
+  $form['login_name'] = array(
+    '#title' => 'Bejelentkező név',
+    '#type' => 'textfield',
+    '#maxlength' => 45,
+    '#size' => 40,
+    '#description' => 'Egyedi bejelentkező név',
+    '#element_validate' => array('_test_login_name_validate'),
+  );
+  $form['mothers_name'] = array(
+    '#title' => 'Édesanyja neve',
+    '#type' => 'textfield',
+    '#maxlength' => 45,
+    '#size' => 40,
+    '#prefix' => '<div id="mothers_name">',
+    '#suffix' => '</div>',
+    '#element_validate' => array('_test_name_validate'),
+    '#description' => 'Egyéni előfizető édesanyjának neve',
+  );
+  $form['birth_date'] = array(
+    '#title' => 'Születési dátum',
+    '#type' => 'textfield',
+    '#maxlength' => 10,
+    '#size' => 10,
+    '#prefix' => '<div id="birth_date">',
+    '#suffix' => '</div>',
+    '#element_validate' => array('_test_date_validate'),
+    '#description' => 'Egyéni előfizető születési dátuma ÉÉÉÉ-HH-NN formában.',
+  );
+  $form['tax_number'] = array(
+    '#title' => 'Adószám',
+    '#type' => 'textfield',
+    '#maxlength' => 11,
+    '#size' => 11,
+    '#prefix' => '<div id="tax_number">',
+    '#suffix' => '</div>',
+    '#element_validate' => array('_test_number_validate'),
+    '#description' => 'Üzleti előfizető adószáma csak számjegyekkel.',
+  );
+  $form['contact_name'] = array(
+    '#title' => 'Kapcsolattartó neve',
+    '#type' => 'textfield',
+    '#maxlength' => 64,
+    '#size' => 40,
+    '#prefix' => '<div id="contact_name">',
+    '#suffix' => '</div>',
+    '#element_validate' => array('_test_name_validate'),
+    '#description' => 'Üzleti előfizető kapcsolattartó neve.',
+  );
+  $form['reseller'] = array(
+    '#title' => 'Viszonteladó',
+    '#type' => 'checkbox',
+    '#return_value' => 1,
+    '#default_value' => 0,
+    '#prefix' => '<div id="reseller">',
+    '#suffix' => '</div>',
+    '#description' => 'Viszonteladó üzleti előfizető esetén bejelölendő.',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Küldés'
+  );
+  return $form;
 }
 /**
  * Form submit
  * Adatok mentése az adatbázisba
  */
 function test_add_customer_3_form_submit($form, &$form_state) {
-    // jelszó generálása
-    $password = _test_pw_gen();
-    if ($form_state['values']['cust_type'] == 1) {
-        // Ha egyéni előfizető, akkor az adószám és a kapcsolattartó neve mezőket 
-        // nem kell menteni.
-        db_set_active('phone');
-        db_insert('cust')
-        -> fields(array(
-            'cust_type' => $form_state['values']['cust_type'],
-            'cust_nm' => $form_state['values']['cust_nm'],
-            'login_name' => $form_state['values']['login_name'],
-            'password' => $password,
-            'mothers_name' => $form_state['values']['mothers_name'],
-            'birth_date' => $form_state['values']['birth_date'],
-            'user_roles' => 'USER'
-       ))->execute();
-        db_set_active('default');
-        drupal_set_message('Az egyéni előfizető adatai mentésre kerültek.');
-    } elseif ($form_state['values']['cust_type'] == 2) {
-        // Ha üzleti előfizető, akkor a viszont az adószám és kapcsolattartó 
-        // neve mezőket kell menteni.
-        $user_roles = 'USER';
-	// Ha viszonteladó is
-        if ($form_state['values']['reseller'] == 1) {
-            $user_roles = 'USER,RESELLER';
-        }
-        db_set_active('phone');
-        db_insert('cust')
-        -> fields(array(
-            'cust_type' => $form_state['values']['cust_type'],
-            'cust_nm' => $form_state['values']['cust_nm'],
-            'login_name' => $form_state['values']['login_name'],
-            'password' => $password,
-            'tax_number' => $form_state['values']['tax_number'],
-            'contact_name' => $form_state['values']['contact_name'],
-            'user_roles' => $user_roles
-        ))->execute();
-        db_set_active('default');
-        drupal_set_message('Az üzleti előfizető adatai mentésre kerültek.');
+  // jelszó generálása
+  $password = _test_pw_gen();
+  if ($form_state['values']['cust_type'] == 1) {
+    // Ha egyéni előfizető, akkor az adószám és a kapcsolattartó neve mezőket
+    // nem kell menteni.
+    db_set_active('phone');
+    db_insert('cust')
+    -> fields(array(
+      'cust_type' => $form_state['values']['cust_type'],
+      'cust_nm' => $form_state['values']['cust_nm'],
+      'login_name' => $form_state['values']['login_name'],
+      'password' => $password,
+      'mothers_name' => $form_state['values']['mothers_name'],
+      'birth_date' => $form_state['values']['birth_date'],
+      'user_roles' => 'USER'
+    ))->execute();
+    db_set_active('default');
+    drupal_set_message('Az egyéni előfizető adatai mentésre kerültek.');
+  }
+  elseif ($form_state['values']['cust_type'] == 2) {
+    // Ha üzleti előfizető, akkor a viszont az adószám és kapcsolattartó
+    // neve mezőket kell menteni.
+    $user_roles = 'USER';
+  // Ha viszonteladó is
+    if ($form_state['values']['reseller'] == 1) {
+        $user_roles = 'USER,RESELLER';
     }
+    db_set_active('phone');
+    db_insert('cust')
+    -> fields(array(
+      'cust_type' => $form_state['values']['cust_type'],
+      'cust_nm' => $form_state['values']['cust_nm'],
+      'login_name' => $form_state['values']['login_name'],
+      'password' => $password,
+      'tax_number' => $form_state['values']['tax_number'],
+      'contact_name' => $form_state['values']['contact_name'],
+      'user_roles' => $user_roles
+    ))->execute();
+    db_set_active('default');
+    drupal_set_message('Az üzleti előfizető adatai mentésre kerültek.');
+  }
 }
 
